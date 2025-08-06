@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/authRoutes.js';
+import gameRoutes from './routes/gameRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -14,27 +15,17 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Test ruta za proveru rada backend servera
-app.get('/test', async (req, res) => {
-  try {
-    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'not connected';
-    res.status(200).json({ message: '✅ Backend radi!', db: dbStatus });
-  } catch (error) {
-    res.status(500).json({ message: '❌ Došlo je do greške', error: error.message });
-  }
-});
-
 app.use('/api/auth', authRoutes);
+app.use('/api/games', gameRoutes);
 
-
-const PORT = process.env.PORT || 5000;
-
-app.get("/", (req, res) => {
-  res.send("🎮 Backend radi! Dobrodošao na GameHub API");
+app.get('/', (req, res) => {
+  res.send('🎮 Backend radi! Dobrodošao na GameHub API');
 });
 
 app.use(notFound);
 app.use(errorHandler);
+
+const PORT = process.env.PORT || 5000;
 
 mongoose
   .connect(process.env.MONGO_URI)
