@@ -11,7 +11,14 @@ import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 dotenv.config();
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.set('trust proxy', 1);
+
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -36,5 +43,5 @@ mongoose
     });
   })
   .catch((err) => {
-    console.error('❌ Greška prilikom konekcije sa MongoDB:', err.message);
+    console.error('❌ Greska prilikom konekcije sa MongoDB:', err.message);
   });
