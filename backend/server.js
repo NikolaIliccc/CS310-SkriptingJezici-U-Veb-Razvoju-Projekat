@@ -3,27 +3,30 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 import authRoutes from './routes/authRoutes.js';
 import gameRoutes from './routes/gameRoutes.js';
+import commentRoutes from './routes/commentRoutes.js';
 import { notFound, errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
+
 const app = express();
 
-app.set('trust proxy', 1);
-
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true
+  origin: CLIENT_URL,
+  credentials: true,
 }));
 
-app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/games', gameRoutes);
+app.use('/api/comments', commentRoutes);
 
 app.get('/', (req, res) => {
   res.send('🎮 Backend radi! Dobrodošao na GameHub API');
@@ -34,8 +37,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ Konekcija sa MongoDB uspostavljena');
     app.listen(PORT, () => {
@@ -43,5 +45,5 @@ mongoose
     });
   })
   .catch((err) => {
-    console.error('❌ Greska prilikom konekcije sa MongoDB:', err.message);
+    console.error('❌ Greška prilikom konekcije sa MongoDB:', err.message);
   });
